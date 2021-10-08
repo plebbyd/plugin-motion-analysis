@@ -10,16 +10,18 @@ from waggle import plugin
 from waggle.data.vision import Camera
 from pathlib import Path
 
-# fake = np.zeros([255, 255], dtype=np.int8)
-# for i in range(255):
-#     fake[i] = i
-# print(fake[180][0])
-# # fake[fake == 0] = 255
-# cv2.imwrite('fake.jpg', fake)
+import ffmpeg
+import os
 
-# exit(0)
+from waggle.data.vision import VideoCapture, resolve_device
+from waggle.data.timestamp import get_timestamp
 
-# plugin.init()
+models = {50: 'tt_classifier_50fps.model',
+          5: 'tt_classifier_5fps.model',
+          1: 'tt_classifier_1fps.model'}
+
+model_data = {rate: pickle.load(open(filename, 'rb')) for rate, filename in models.items()}
+# model_data: Dict[TextureTemporalClassifier]
 
 def get_water_mask(camera: Camera, model: TextureTemporalClassifier):
     N_FRAMES_MAX_BUFFER = 60
@@ -34,91 +36,177 @@ def get_water_mask(camera: Camera, model: TextureTemporalClassifier):
     print("FPS: %f" % fps)
 
 
-def batch_frame_from_camera(camera: Camera, framerate: int) -> np.ndarray:
-    """
-    The purpose of this function is to read 60 frames from the camera at a specified framerate. The framerate of this
-    buffering is important, because I have trained my TextureTemporal models on a certain framerate of video. The models
-    have learned the flickering motion of water from the specific spacing of frames that they have been given, i.e. 50fps,
-    5fps, 1fps.
-
-    Returns an ndarray of the size [800, 600]
-    """
-    
-    # for sample in camera.stream():
-    pass
+def get_stream_info(stream_url):
+    try:
+        input_probe = ffmpeg.probe(stream_url)
+        fps = eval(input_probe['streams'][0]['r_frame_rate'])
+        width = int(input_probe['streams'][0]['width'])
+        height = int(input_probe['streams'][0]['height'])
+        return True, fps, width, height
+    except:
+        return False, 0., 0, 0
 
 
-models = {50: 'tt_classifier_50fps.model',
-          5: 'tt_classifier_5fps.model',
-          1: 'tt_classifier_1fps.model'}
+def take_sample(stream, duration, skip_second, resampling, resampling_fps):
+    stream_url = resolve_device(stream)
+    # Assume PyWaggle's timestamp is in nano seconds
+    timestamp = get_timestamp() + skip_second * 1e9
+    try:
+        script_dir = os.path.dirname(__file__)
+    except NameError:
+        script_dir = os.getcwd()
+    filename_raw = os.path.join(script_dir, 'water_record_raw.mp4')
+    filename = os.path.join(script_dir, 'water_record.mp4')
 
-model_data = {rate: pickle.load(open(filename, 'rb')) for rate, filename in models.items()}
-# model_data: Dict[TextureTemporalClassifier]
+    c = ffmpeg.input(stream_url, ss=skip_second).output(
+        filename_raw,
+        codec = "copy", # use same codecs of the original video
+        f='mp4',
+        t=duration).overwrite_output()
+    print(c.compile())
+    c.run(quiet=True)
 
-cap = cv2.VideoCapture('pond_001.avi')
-width  = cap.get(cv2.CAP_PROP_FRAME_WIDTH)  # float
-height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT) # float
-fps = cap.get(cv2.CAP_PROP_FPS)
-diff_time = 1. / 5.
-print(f'{width}, {height}, {fps}')
+    d = ffmpeg.input(filename_raw)
+    if resampling:
+        print(f'Resampling to {resampling_fps}...')
+        d = ffmpeg.filter(d, 'fps', fps=resampling_fps)
+    d = ffmpeg.output(d, filename, f='mp4', t=duration).overwrite_output()
+    print(d.compile())
+    d.run(quiet=True)
+    # TODO: We may want to inspect whether the ffmpeg commands succeeded
+    return True, filename, timestamp
 
-c = 0
-input_frames = []
-t = 0
-while True:
-    t += 1. / fps
-    ret, frame = cap.read()
+
+
+def run(args):
+    device_url = resolve_device(Path(args.stream))
+    ret, fps, width, height = get_stream_info(device_url)
     if ret == False:
-        break
-    if t >= diff_time:
-        input_frames.append(frame)
-        c += 1
-        t -= diff_time
-        if c == 60:
-            break
-# print(frames)
-# input_frames = cv2.vconcat(frames)
-input_frames = np.array(input_frames)
-input_frames = np.expand_dims(input_frames, axis=0)
-print(f'{input_frames.shape}')
-# exit(0)
-segmentation_array = model_data[5].segment(input_frames, prob_mode=True)
-print(segmentation_array.shape)
-print(segmentation_array.dtype)
-result = segmentation_array.squeeze()
-print(result.shape)
-# result *= 255.
-# print(f'{result}')
-# result[result > 0.] = 124.
-# result = result.astype(np.int8)
-result2 = cv2.cvtColor((result*255).astype(np.uint8), cv2.COLOR_GRAY2RGB)
-print(result2.dtype)
-cv2.imwrite('result.jpg', result2)
-print('saved')
+        print(f'Error probing {device_url}. Please make sure to put a correct video stream')
+        return 1
+    print(f'Input stream {device_url} with size of W: {width}, H: {height} at {fps} FPS')
 
-# if __name__ == '__main__':
-#     parse = argparse.ArgumentParser()
-#     parse.add_argument('-i', '--input', required=True,
-#                        help='Input video or frame folder to give to the classifier. To inference by using the camera,'
-#                             'set this option as \'camera.\'')
-#     parse.add_argument('-o', '--output', required=True,
-#                        help='Output folder which will hold corresponding water masks')
-#     parse.add_argument('-r', '--rate', required=False, type=int, default=5,
-#                        help='Specify the model to use by average FPS: 1, 5, or 50. Note that this does not mean that the'
-#                             'input video fps has to match the model perfectly; just select the closest option for your'
-#                             'use case.')
-#     parse.add_argument('--heatmap', required=False, type=bool, default=False,
-#                        help='Output the segmentation images as a heatmap.')
-#     args = parse.parse_args()
+    # If resampling is True, we use resampling_fps for inferencing as well as sampling
+    if args.resampling:
+        fps = args.resampling_fps
+        print(f'Input will be resampled to {args.resampling_fps} FPS')
 
-    # Run the specified classifier on the image stream once
-    # if args.input == 'camera':
-    #     print('Running water segmentation with camera...')
-    #     cam = Camera()
-    #     input_frames = batch_frame_from_camera(cam, args.rate)  # TODO This function needs to be written
 
-    #     # From this point, I do not know the best way to deal with the image output. Should it be published? Stored in
-    #     # a buffer? I don't know. One possible metric that could be extracted from the segmentation image is a "water
-    #     # surface area" measurement. This would be helpful in conjunction with water level analysis to determine flooding
-    #     # seriousness.
-    #     segmentation_array = model_data[args.rate].segment(input_frames, prob_mode=args.heatmap)
+    sampling_countdown = -1
+    if args.sampling_interval > -1:
+        print(f'Input video will be sampled every {args.sampling_interval}th inferencing')
+        sampling_countdown = args.sampling_interval
+
+    print('Starting traffic state estimation..')
+    plugin.init()
+    while True:
+        print(f'Grabbing video for {args.duration} seconds')
+        ret, filename, timestamp = take_sample(
+            stream=Path(args.stream),
+            duration=args.duration,
+            skip_second=args.skip_second,
+            resampling=args.resampling,
+            resampling_fps=args.resampling_fps
+        )
+        if ret == False:
+            print('Coud not sample video. Exiting...')
+            return 1
+
+        print('Analyzing the video...')
+        total_frames = 0
+        do_sampling = False
+        if sampling_countdown > 0:
+            sampling_countdown -= 1
+        elif sampling_countdown == 0:
+            do_sampling = True
+            sampling_countdown = args.sampling_interval
+
+
+        with VideoCapture(filename) as cap:
+            width  = cap.get(cv2.CAP_PROP_FRAME_WIDTH)  # float
+            height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT) # float
+            fps = cap.get(cv2.CAP_PROP_FPS)
+            diff_time = 1. / 5.
+            print(f'width: {width}, height: {height}, fps: {fps}')
+
+            if do_sampling:
+                fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+                out = cv2.VideoWriter("watersample.mp4", fourcc, fps, (int(width), int(height)), True)
+
+
+            c = 0
+            input_frames = []
+            t = 0
+            while True:
+                t += 1. / fps
+                ret, frame = cap.read()
+                if ret == False:
+                    break
+                if t >= diff_time:
+                    input_frames.append(frame)
+                    c += 1
+                    t -= diff_time
+                    if c == 60:
+                        break
+
+        input_frames = np.array(input_frames)
+        input_frames = np.expand_dims(input_frames, axis=0)
+        print(f'{input_frames.shape}')
+        # exit(0)
+        segmentation_array = model_data[5].segment(input_frames, prob_mode=True)
+        print(segmentation_array.shape)
+        print(segmentation_array.dtype)
+        result = segmentation_array.squeeze()
+        print(result.shape)
+        print(result)
+
+        # result *= 255.
+        # print(f'{result}')
+        # result[result > 0.] = 124.
+        # result = result.astype(np.int8)
+        result2 = cv2.cvtColor((result*255).astype(np.uint8), cv2.COLOR_GRAY2RGB)
+        print(result2.dtype)
+        cv2.imwrite('result.jpg', result2)
+        print('saved')
+
+        count = 0
+        for i in range(len(result)):
+            for j in range(len(result[0])):
+                if result[i][j] > 0.7:
+                    count += 1
+        print(count)
+
+        # if do_sampling:
+        #     plugin.upload_file("record.mp4")
+        #     plugin.upload_file("result.jpg")
+
+        exit(0)
+
+
+if __name__=='__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '-stream', dest='stream',
+        action='store', default="camera", type=str,
+        help='ID or name of a stream, e.g. sample')
+    parser.add_argument(
+        '-duration', dest='duration',
+        action='store', default=10., type=float,
+        help='Time duration for input video')
+    parser.add_argument(
+        '-resampling', dest='resampling', default=False,
+        action='store_true', help="Resampling the sample to -resample-fps option (defualt 12)")
+    parser.add_argument(
+        '-resampling-fps', dest='resampling_fps',
+        action='store', default=12, type=int,
+        help='Frames per second for input video')
+    parser.add_argument(
+        '-skip-second', dest='skip_second',
+        action='store', default=3., type=float,
+        help='Seconds to skip before recording')
+    parser.add_argument(
+        '-sampling-interval', dest='sampling_interval',
+        action='store', default=-1, type=int,
+        help='Inferencing interval for sampling results')
+    args = parser.parse_args()
+    exit(run(args))
