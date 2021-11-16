@@ -160,7 +160,7 @@ def run(args):
 
         input_frames = np.array(input_frames)
         input_frames = np.expand_dims(input_frames, axis=0)
-        #print(f'{input_frames.shape}')
+        print(f'{input_frames.shape}')
         segmentation_array = model_data[5].segment(input_frames, prob_mode=True)
         #print(segmentation_array.shape)
         #print(segmentation_array.dtype)
@@ -207,7 +207,7 @@ if __name__=='__main__':
         help='ID or name of a stream, e.g. sample')
     parser.add_argument(
         '-duration', dest='duration',
-        action='store', default=10., type=float,
+        action='store', default=14., type=float,
         help='Time duration for input video')
     parser.add_argument(
         '-resampling', dest='resampling', default=False,
