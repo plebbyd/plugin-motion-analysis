@@ -18,6 +18,8 @@ from waggle.data.timestamp import get_timestamp
 
 import time
 
+TOPIC_FLOWDETECTOR = 'env.flow.detection'
+
 models = {50: 'tt_classifier_50fps.model',
           5: 'tt_classifier_5fps.model',
           1: 'tt_classifier_1fps.model'}
@@ -82,7 +84,7 @@ def take_sample(stream, duration, skip_second, resampling, resampling_fps):
 
 def run(args):
     logtimestamp = time.time()
-    plugin.publish(TOPIC_CLOUDCOVER, 'Flow Detector: Getting Video', timestamp=logtimestamp)
+    plugin.publish(TOPIC_FLOWDETECTOR, 'Flow Detector: Getting Video', timestamp=logtimestamp)
     print(f"Getting Video: {logtimestamp}")
     device_url = resolve_device(Path(args.stream))
     ret, fps, width, height = get_stream_info(device_url)
@@ -103,7 +105,7 @@ def run(args):
         sampling_countdown = args.sampling_interval
 
     logtimestamp = time.time()
-    plugin.publish(TOPIC_CLOUDCOVER, 'Flow Detector: Starting detector', logtimestamp=timestamp)
+    plugin.publish(TOPIC_FLOWDETECTOR, 'Flow Detector: Starting detector', logtimestamp=timestamp)
     print('Starting flow detector..')
     plugin.init()
     while True:
@@ -168,7 +170,7 @@ def run(args):
 
 
         logtimestamp = time.time()
-        plugin.publish(TOPIC_CLOUDCOVER, 'Flow Detector: End Detection', timestamp=logtimestamp)
+        plugin.publish(TOPIC_FLOWDETECTOR, 'Flow Detector: End Detection', timestamp=logtimestamp)
         print(f"End Detection: {logtimestamp}")
 
         # result *= 255.
@@ -192,7 +194,7 @@ def run(args):
             plugin.upload_file("result.jpg")
 
         logtimestamp = time.time()
-        plugin.publish(TOPIC_CLOUDCOVER, 'Flow Detector: End plugin', timestamp=logtimestamp)
+        plugin.publish(TOPIC_FLOWDETECTOR, 'Flow Detector: End plugin', timestamp=logtimestamp)
         print(f"End plugin: {logtimestamp}")
         exit(0)
 
