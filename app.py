@@ -105,7 +105,7 @@ def run(args):
         sampling_countdown = args.sampling_interval
 
     logtimestamp = time.time()
-    plugin.publish(TOPIC_FLOWDETECTOR, 'Flow Detector: Starting detector', logtimestamp=timestamp)
+    plugin.publish(TOPIC_FLOWDETECTOR, 'Flow Detector: Starting detector', timestamp=logtimestamp)
     print('Starting flow detector..')
     plugin.init()
     while True:
