@@ -1,5 +1,5 @@
 name: "flowdetector"
-description: "Traffic State Estimator"
+description: "Flow detector"
 version : "0.0.0"
 namespace: "sage"
 authors: "Seongha Park <seongha.park@anl.gov>"
