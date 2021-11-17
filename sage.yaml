@@ -1,4 +1,4 @@
-name: "waterdetector"
+name: "flowdetector"
 description: "Traffic State Estimator"
 version : "0.0.0"
 namespace: "sage"
@@ -7,12 +7,12 @@ collaborators: "Waggle Team <https://wa8.gl>"
 funding:
 license: "MIT License"
 keywords: "Flow detector, FFT"
-homepage: "https://github.com/waggle-sensor/plugin-water-segmentation/blob/main/ecr-meta/ecr-science-description.md"
+homepage: "https://github.com/waggle-sensor/plugin-flow-detection"
 source:
   architectures :
     - "linux/arm64"
     - "linux/amd64"
-  url: "https://github.com/waggle-sensor/plugin-water-segmentation"
+  url: "https://github.com/waggle-sensor/plugin-flow-detection"
   branch: "main"
 inputs:
   - id: "stream"
