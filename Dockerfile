@@ -2,7 +2,6 @@ FROM waggle/plugin-base:1.1.1-ml
 
 RUN apt-get update \
   && apt-get install -y \
-  ffmpeg scikit-image \
   && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt /app/
