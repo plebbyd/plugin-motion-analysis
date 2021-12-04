@@ -16,8 +16,8 @@ ENV SAGE_STORE_URL=${SAGE_STORE_URL} \
     BUCKET_ID_MODEL=${BUCKET_ID_MODEL}
 
 RUN sage-cli.py storage files download ${BUCKET_ID_MODEL} tt_classifier_1fps.model --target /app/tt_classifier_1fps.model
-  && sage-cli.py storage files download ${BUCKET_ID_MODEL} tt_classifier_1fps.model --target /app/tt_classifier_5fps.model
-  && sage-cli.py storage files download ${BUCKET_ID_MODEL} tt_classifier_1fps.model --target /app/tt_classifier_50fps.model
+RUN sage-cli.py storage files download ${BUCKET_ID_MODEL} tt_classifier_1fps.model --target /app/tt_classifier_5fps.model
+RUN sage-cli.py storage files download ${BUCKET_ID_MODEL} tt_classifier_1fps.model --target /app/tt_classifier_50fps.model
 
 WORKDIR /app
 ENTRYPOINT ["python3", "-u", "/app/app.py"]
