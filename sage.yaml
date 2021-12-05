@@ -1,5 +1,5 @@
-name: "flowdetector"
-description: "Flow detector"
+name: "motion-analysis"
+description: "Motion Analysis"
 version : "0.0.0"
 namespace: "sage"
 authors: "Seongha Park <seongha.park@anl.gov>"
