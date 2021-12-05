@@ -11,9 +11,8 @@ homepage: "https://github.com/waggle-sensor/plugin-flow-detection"
 source:
   architectures :
     - "linux/arm64"
-    - "linux/amd64"
   url: "https://github.com/waggle-sensor/plugin-flow-detection"
-  branch: "main"
+  branch: "oneshot"
 inputs:
   - id: "stream"
     type: "string"
