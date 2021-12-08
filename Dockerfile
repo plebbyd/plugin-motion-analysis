@@ -12,7 +12,7 @@ RUN apt-get install ffmpeg libsm6 libxext6  -y
 
 RUN pip3 install --upgrade pip
 COPY requirements.txt /app/
-RUN pip3 install --no-cache-dir --upgrade -r /app/requirements.txt
+RUN pip3 install --no-cache-dir -r /app/requirements.txt
 
 COPY app.py Classifiers.py TrainingSequence.py Utilities.py app.py /app/
 
