@@ -1,4 +1,4 @@
-## Background
+## Science
 Segments of the area of where moving objects are or an object that is continuously moving with a certain pattern from videos taken from a street view camera. The algorithm is first extracting changes of brightness of the surface of the images in temporal dimension which is shown as a sinusoidal signal and second using the FFT algorithm to analyze the signal to create a temporal descriptor. In addition to the temporal information, the algorithm utilized a spatial descriptor extracted by Local Binary Pattern (LBP) histogram [1-2] to understand the scene in spatial perspective [3]. The local temporal and spatial descriptors are utilized to determine local probabilistic classification using a Random Decision Forest [4] and final detection maps were computed by means of regularization using a binary Markov Random Field [5].
  
 ## AI@Edge:
