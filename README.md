@@ -17,3 +17,10 @@ I followed the general algorithm described by [this paper](https://staff.fnwi.uv
 The inference entrypoint of the script is `WaterSegmentationInference.py`. This is where stored models (`tt_classifier_*.model`)
 are loaded and arguments are parsed. This script still needs some work; it lacks a function that can buffer frames from 
 the camera.
+
+
+## funding
+[NSF 1935984](https://www.nsf.gov/awardsearch/showAward?AWD_ID=1935984)
+
+## collaborators
+Bhupendra Raut, Dario Dematties Reyes, Joseph Swantek, Neal Conrad, Nicola Ferrier, Pete Beckman, Raj Sankaran, Robert Jackson, Scott Collis, Sean Shahkarami, Sergey Shemyakin, Wolfgang Gerlach, Yongho kim
