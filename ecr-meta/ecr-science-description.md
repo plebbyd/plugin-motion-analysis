@@ -4,6 +4,21 @@ Segments of the area of where moving objects are or an object that is continuous
 # AI@Edge:
 The model accepts an array of shapes [N videos, 60 frames, 800 pixels, 600 pixels, 3 color channels] where N is the number of separate videos to process. Note that the 60 frames must be spaced out in time according to the model's framerate. This means that if you are inferencing using the 5fps model (the model I recommend- it is not too resource intensive to buffer while still retaining accuracy), then make sure to feed it 60 frames spaced out according to 5fps timing, that is 0.2s between each frame capture. This means that the model would receive 60 frames over the course of 12s and would output one water mask from that motion data. The video is then passed through the consecutive image processing. Each pixel of the video frames processed and classified how much it ccan be segmented as a pixel of an area showing a flow.
 
+# Using the code
+Output: recorded video, inference image  
+Input: 5 second video (12 fps, total 60 frames)  
+Image resolution: 800x600  
+Inference time:  
+Model loading time:  
+
+# Arguments
+   '-stream': ID or name of a stream, e.g. top-camera  
+   '-duration': Time duration for input video (default = 10)  
+   '-resampling': Resampling the sample to -resample-fps option (default = 12)  
+   '-resampling-fps': Frames per second for input video (default = 12)  
+   '-skip-second': Seconds to skip before recording (default = 3)  
+   '-sampling-interval': Inferencing interval for sampling results (default = -1, no interval)  
+
 # Reference
 [1] Timo Ojala, Matti Pietikainen, and Topi Maenpaa. "Multiresolution gray-scale and rotation invariant texture classification with local binary patterns." IEEE Transactions on pattern analysis and machine intelligence 24, no. 7 (2002): 971-987.  
 [2] Qian, Xueming, Xian-Sheng Hua, Ping Chen, and Liangjun Ke. "PLBP: An effective local binary patterns texture descriptor with pyramid representation." Pattern Recognition 44, no. 10-11 (2011): 2502-2515.  
