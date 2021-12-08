@@ -19,6 +19,10 @@ Model loading time:
    '-skip-second': Seconds to skip before recording (default = 3)  
    '-sampling-interval': Inferencing interval for sampling results (default = -1, no interval)  
 
+# Ontology:
+The code publishes measurements with toptic ‘env.flow.detection’. Value for a topic indicates if there is water (1, True) or not (0, False).
+
+
 # Reference
 [1] Timo Ojala, Matti Pietikainen, and Topi Maenpaa. "Multiresolution gray-scale and rotation invariant texture classification with local binary patterns." IEEE Transactions on pattern analysis and machine intelligence 24, no. 7 (2002): 971-987.  
 [2] Qian, Xueming, Xian-Sheng Hua, Ping Chen, and Liangjun Ke. "PLBP: An effective local binary patterns texture descriptor with pyramid representation." Pattern Recognition 44, no. 10-11 (2011): 2502-2515.  
