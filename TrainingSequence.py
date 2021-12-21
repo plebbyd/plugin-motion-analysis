@@ -5,7 +5,7 @@ import numpy as np
 # import cupy as np
 import cv2
 
-N_PROCESSES = cpu_count() - 8
+N_PROCESSES = cpu_count() - 2
 
 class TrainingSequence:
 
