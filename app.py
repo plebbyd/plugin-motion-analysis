@@ -59,8 +59,8 @@ def take_sample(stream, duration, skip_second, resampling, resampling_fps):
         script_dir = os.path.dirname(__file__)
     except NameError:
         script_dir = os.getcwd()
-    filename_raw = os.path.join(script_dir, 'water_record_raw.mp4')
-    filename = os.path.join(script_dir, 'water_record.mp4')
+    filename_raw = os.path.join(script_dir, 'motion_record_raw.mp4')
+    filename = os.path.join(script_dir, 'motion_record.mp4')
 
     c = ffmpeg.input(stream_url, ss=skip_second).output(
         filename_raw,
@@ -143,7 +143,7 @@ def run(args):
 
             if do_sampling:
                 fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-                out = cv2.VideoWriter("watersample.mp4", fourcc, fps, (int(width), int(height)), True)
+                out = cv2.VideoWriter("motionsample.mp4", fourcc, fps, (int(width), int(height)), True)
 
 
             c = 0
@@ -192,7 +192,7 @@ def run(args):
         #            count += 1
         #print(count)
 
-        plugin.upload_file("record.mp4")
+        plugin.upload_file("motion_record.mp4")
         plugin.upload_file("result.jpg")
 
         logtimestamp = time.time()
