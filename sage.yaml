@@ -1,6 +1,5 @@
 name: "motion-analysis"
 description: "Motion Analysis"
-version : "0.0.0"
 namespace: "sage"
 authors: "Luke Jacobs <lukedj2@illinois.edu>, Seongha Park <seongha.park@anl.gov>"
 funding: "NSF 1935984"
@@ -11,8 +10,6 @@ homepage: "https://github.com/waggle-sensor/plugin-flow-detection"
 source:
   architectures :
     - "linux/arm64"
-  url: "https://github.com/waggle-sensor/plugin-flow-detection"
-  branch: "oneshot"
 inputs:
   - id: "stream"
     type: "string"
