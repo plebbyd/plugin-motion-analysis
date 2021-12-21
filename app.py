@@ -192,9 +192,8 @@ def run(args):
         #            count += 1
         #print(count)
 
-        if do_sampling:
-            plugin.upload_file("record.mp4")
-            plugin.upload_file("result.jpg")
+        plugin.upload_file("record.mp4")
+        plugin.upload_file("result.jpg")
 
         logtimestamp = time.time()
         plugin.publish(TOPIC_FLOWDETECTOR, 'Flow Detector: End plugin', timestamp=logtimestamp)
