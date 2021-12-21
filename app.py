@@ -79,7 +79,7 @@ def take_sample(stream, duration, skip_second, resampling, resampling_fps):
 
 
 def run(args):
-    device_url = resolve_device(Path(args.stream))
+    device_url = resolve_device(args.stream)
     ret, fps, width, height = get_stream_info(device_url)
     if ret == False:
         print(f'Error probing {device_url}. Please make sure to put a correct video stream')
@@ -102,7 +102,7 @@ def run(args):
     while True:
         print(f'Grabbing video for {args.duration} seconds')
         ret, filename, timestamp = take_sample(
-            stream=Path(args.stream),
+            stream=args.stream,
             duration=args.duration,
             skip_second=args.skip_second,
             resampling=args.resampling,
