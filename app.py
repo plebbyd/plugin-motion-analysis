@@ -89,6 +89,7 @@ def run(args):
     logtimestamp = time.time()
     plugin.publish(TOPIC_FLOWDETECTOR, 'Flow Detector: Getting Video', timestamp=logtimestamp)
     print(f"Getting Video: {logtimestamp}")
+
     device_url = resolve_device(args.stream)
     ret, fps, width, height = get_stream_info(device_url)
     if ret == False:

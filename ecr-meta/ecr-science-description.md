@@ -40,8 +40,6 @@ print(df)
 ```
 For more information, please see [Access and use data documentation](https://docs.waggle-edge.ai/docs/tutorials/accessing-data) and [sage_data_client](https://pypi.org/project/sage-data-client/).
 
-
-
 # Reference
 [1] Timo Ojala, Matti Pietikainen, and Topi Maenpaa. "Multiresolution gray-scale and rotation invariant texture classification with local binary patterns." IEEE Transactions on pattern analysis and machine intelligence 24, no. 7 (2002): 971-987.  
 [2] Qian, Xueming, Xian-Sheng Hua, Ping Chen, and Liangjun Ke. "PLBP: An effective local binary patterns texture descriptor with pyramid representation." Pattern Recognition 44, no. 10-11 (2011): 2502-2515.  
