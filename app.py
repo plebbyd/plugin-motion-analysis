@@ -16,6 +16,10 @@ import os
 from waggle.data.vision import VideoCapture, resolve_device
 from waggle.data.timestamp import get_timestamp
 
+import time
+
+TOPIC_FLOWDETECTOR = 'env.flow.detection'
+
 models = {50: 'tt_classifier_50fps.model',
           5: 'tt_classifier_5fps.model',
           1: 'tt_classifier_1fps.model'}
@@ -55,8 +59,8 @@ def take_sample(stream, duration, skip_second, resampling, resampling_fps):
         script_dir = os.path.dirname(__file__)
     except NameError:
         script_dir = os.getcwd()
-    filename_raw = os.path.join(script_dir, 'water_record_raw.mp4')
-    filename = os.path.join(script_dir, 'water_record.mp4')
+    filename_raw = os.path.join(script_dir, 'motion_record_raw.mp4')
+    filename = os.path.join(script_dir, 'motion_record.mp4')
 
     c = ffmpeg.input(stream_url, ss=skip_second).output(
         filename_raw,
@@ -70,7 +74,10 @@ def take_sample(stream, duration, skip_second, resampling, resampling_fps):
     if resampling:
         print(f'Resampling to {resampling_fps}...')
         d = ffmpeg.filter(d, 'fps', fps=resampling_fps)
-    d = ffmpeg.output(d, filename, f='mp4', t=duration).overwrite_output()
+        d = ffmpeg.output(d, filename, f='mp4', t=duration).overwrite_output()
+    else:
+        d = ffmpeg.output(d, filename, codec="copy", f='mp4', t=duration).overwrite_output()
+
     print(d.compile())
     d.run(quiet=True)
     # TODO: We may want to inspect whether the ffmpeg commands succeeded
@@ -79,6 +86,10 @@ def take_sample(stream, duration, skip_second, resampling, resampling_fps):
 
 
 def run(args):
+    logtimestamp = time.time()
+    plugin.publish(TOPIC_FLOWDETECTOR, 'Flow Detector: Getting Video', timestamp=logtimestamp)
+    print(f"Getting Video: {logtimestamp}")
+
     device_url = resolve_device(args.stream)
     ret, fps, width, height = get_stream_info(device_url)
     if ret == False:
@@ -97,7 +108,9 @@ def run(args):
         print(f'Input video will be sampled every {args.sampling_interval}th inferencing')
         sampling_countdown = args.sampling_interval
 
-    print('Starting traffic state estimation..')
+    logtimestamp = time.time()
+    plugin.publish(TOPIC_FLOWDETECTOR, 'Flow Detector: Starting detector', timestamp=logtimestamp)
+    print('Starting flow detector..')
     plugin.init()
     while True:
         print(f'Grabbing video for {args.duration} seconds')
@@ -131,7 +144,7 @@ def run(args):
 
             if do_sampling:
                 fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-                out = cv2.VideoWriter("watersample.mp4", fourcc, fps, (int(width), int(height)), True)
+                out = cv2.VideoWriter("motionsample.mp4", fourcc, fps, (int(width), int(height)), True)
 
 
             c = 0
@@ -152,34 +165,40 @@ def run(args):
         input_frames = np.array(input_frames)
         input_frames = np.expand_dims(input_frames, axis=0)
         print(f'{input_frames.shape}')
-        # exit(0)
         segmentation_array = model_data[5].segment(input_frames, prob_mode=True)
-        print(segmentation_array.shape)
-        print(segmentation_array.dtype)
+        #print(segmentation_array.shape)
+        #print(segmentation_array.dtype)
         result = segmentation_array.squeeze()
-        print(result.shape)
-        print(result)
+        #print(result.shape)
+        #print(result)
+
+
+        logtimestamp = time.time()
+        plugin.publish(TOPIC_FLOWDETECTOR, 'Flow Detector: End Detection', timestamp=logtimestamp)
+        print(f"End Detection: {logtimestamp}")
 
         # result *= 255.
         # print(f'{result}')
         # result[result > 0.] = 124.
         # result = result.astype(np.int8)
         result2 = cv2.cvtColor((result*255).astype(np.uint8), cv2.COLOR_GRAY2RGB)
-        print(result2.dtype)
+        #print(result2.dtype)
         cv2.imwrite('result.jpg', result2)
         print('saved')
 
-        count = 0
-        for i in range(len(result)):
-            for j in range(len(result[0])):
-                if result[i][j] > 0.7:
-                    count += 1
-        print(count)
+        #count = 0
+        #for i in range(len(result)):
+        #    for j in range(len(result[0])):
+        #        if result[i][j] > 0.7:
+        #            count += 1
+        #print(count)
 
-        # if do_sampling:
-        #     plugin.upload_file("record.mp4")
-        #     plugin.upload_file("result.jpg")
+        plugin.upload_file("motion_record.mp4")
+        plugin.upload_file("result.jpg")
 
+        logtimestamp = time.time()
+        plugin.publish(TOPIC_FLOWDETECTOR, 'Flow Detector: End plugin', timestamp=logtimestamp)
+        print(f"End plugin: {logtimestamp}")
         exit(0)
 
 
@@ -191,7 +210,7 @@ if __name__=='__main__':
         help='ID or name of a stream, e.g. sample')
     parser.add_argument(
         '-duration', dest='duration',
-        action='store', default=10., type=float,
+        action='store', default=14., type=float,
         help='Time duration for input video')
     parser.add_argument(
         '-resampling', dest='resampling', default=False,
@@ -209,4 +228,4 @@ if __name__=='__main__':
         action='store', default=-1, type=int,
         help='Inferencing interval for sampling results')
     args = parser.parse_args()
-    exit(run(args))
+    run(args)

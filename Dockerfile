@@ -1,11 +1,16 @@
-FROM waggle/plugin-base:1.1.1-ml
-
-# RUN apt-get update \
-#   && apt-get install -y \
-#   && rm -rf /var/lib/apt/lists/*
+FROM waggle/plugin-base:1.1.1-base
+  
+RUN apt-get update \
+  && apt-get -y \
+  install \
+  ffmpeg \
+  libsm6 \
+  libxext6 \
+  && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt /app/
-RUN pip3 install --no-cache-dir --upgrade -r /app/requirements.txt
+RUN pip3 install --upgrade pip \
+  && pip3 install --no-cache-dir -r /app/requirements.txt
 
 COPY app.py Classifiers.py TrainingSequence.py Utilities.py app.py /app/
 
