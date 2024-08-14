@@ -24,6 +24,7 @@ ENV SAGE_STORE_URL=${SAGE_STORE_URL} \
 #RUN sage-cli.py storage files download ${BUCKET_ID_MODEL} tt_classifier_1fps.model --target /app/tt_classifier_5fps.model
 #RUN sage-cli.py storage files download ${BUCKET_ID_MODEL} tt_classifier_1fps.model --target /app/tt_classifier_50fps.model
 # sage-cli is deprecated 
+# Also made a change to what models were loaded into the image (looks like an oversight above?)
 ADD https://web.lcrc.anl.gov/public/waggle/models/osn-backup/3562bef2-735b-4a98-8b13-2206644bdb8e/tt_classifier_1fps.model /app/tt_classifier_1fps.model
 ADD https://web.lcrc.anl.gov/public/waggle/models/osn-backup/3562bef2-735b-4a98-8b13-2206644bdb8e/tt_classifier_5fps.model /app/tt_classifier_5fps.model
 ADD https://web.lcrc.anl.gov/public/waggle/models/osn-backup/3562bef2-735b-4a98-8b13-2206644bdb8e/tt_classifier_50fps.model /app/tt_classifier_50fps.model
