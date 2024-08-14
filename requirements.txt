@@ -2,7 +2,7 @@ opencv-python
 matplotlib
 numpy
 mydia
-sklearn
+scikit-learn
 scikit-image
 ffmpeg-python
 git+https://github.com/sagecontinuum/sage-cli.git
