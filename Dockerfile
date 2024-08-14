@@ -20,9 +20,13 @@ ARG BUCKET_ID_MODEL="3562bef2-735b-4a98-8b13-2206644bdb8e"
 ENV SAGE_STORE_URL=${SAGE_STORE_URL} \
     BUCKET_ID_MODEL=${BUCKET_ID_MODEL}
 
-RUN sage-cli.py storage files download ${BUCKET_ID_MODEL} tt_classifier_1fps.model --target /app/tt_classifier_1fps.model
-RUN sage-cli.py storage files download ${BUCKET_ID_MODEL} tt_classifier_1fps.model --target /app/tt_classifier_5fps.model
-RUN sage-cli.py storage files download ${BUCKET_ID_MODEL} tt_classifier_1fps.model --target /app/tt_classifier_50fps.model
+#RUN sage-cli.py storage files download ${BUCKET_ID_MODEL} tt_classifier_1fps.model --target /app/tt_classifier_1fps.model
+#RUN sage-cli.py storage files download ${BUCKET_ID_MODEL} tt_classifier_1fps.model --target /app/tt_classifier_5fps.model
+#RUN sage-cli.py storage files download ${BUCKET_ID_MODEL} tt_classifier_1fps.model --target /app/tt_classifier_50fps.model
+# sage-cli is deprecated 
+ADD https://web.lcrc.anl.gov/public/waggle/models/osn-backup/3562bef2-735b-4a98-8b13-2206644bdb8e/tt_classifier_1fps.model /app/tt_classifier_1fps.model
+ADD https://web.lcrc.anl.gov/public/waggle/models/osn-backup/3562bef2-735b-4a98-8b13-2206644bdb8e/tt_classifier_5fps.model /app/tt_classifier_5fps.model
+ADD https://web.lcrc.anl.gov/public/waggle/models/osn-backup/3562bef2-735b-4a98-8b13-2206644bdb8e/tt_classifier_50fps.model /app/tt_classifier_50fps.model
 
 WORKDIR /app
 ENTRYPOINT ["python3", "-u", "/app/app.py"]
