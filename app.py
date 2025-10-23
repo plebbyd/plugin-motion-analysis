@@ -86,6 +86,9 @@ def take_sample(stream, duration, skip_second, resampling, resampling_fps):
 
 
 def run(args):
+    # Initialize the plugin first
+    plugin.init()
+          
     logtimestamp = time.time()
     plugin.publish(TOPIC_FLOWDETECTOR, 'Flow Detector: Getting Video', timestamp=logtimestamp)
     print(f"Getting Video: {logtimestamp}")
@@ -111,7 +114,6 @@ def run(args):
     logtimestamp = time.time()
     plugin.publish(TOPIC_FLOWDETECTOR, 'Flow Detector: Starting detector', timestamp=logtimestamp)
     print('Starting flow detector..')
-    plugin.init()
     while True:
         print(f'Grabbing video for {args.duration} seconds')
         ret, filename, timestamp = take_sample(
