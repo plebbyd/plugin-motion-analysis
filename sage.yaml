@@ -1,13 +1,13 @@
-name: "motion-analysis"
-description: "Motion Analysis"
+name: "motion-analysis-dev"
+description: "Motion Analysis Dev"
 namespace: "sage"
-version: "0.0.1"
-authors: "Luke Jacobs <lukedj2@illinois.edu>, Seongha Park <seongha.park@anl.gov>"
+version: "0.0.2"
+authors: "Luke Jacobs <lukedj2@illinois.edu>, Seongha Park <seongha.park@anl.gov>, Piotr Lebiedzinski <piotr.lebiedzinski@northwestern.edu>"
 funding: "NSF 1935984"
 collaborators: "Bhupendra Raut, Dario Dematties Reyes, Joseph Swantek, Neal Conrad, Nicola Ferrier, Pete Beckman, Raj Sankaran, Robert Jackson, Scott Collis, Sean Shahkarami, Seongha Park, Sergey Shemyakin, Wolfgang Gerlach, Yongho kim"
 license: "MIT License"
 keywords: "Flow detector, FFT"
-homepage: "https://github.com/waggle-sensor/plugin-flow-detection"
+homepage: "https://github.com/plebbyd/plugin-flow-detection"
 source:
   architectures :
     - "linux/arm64"
