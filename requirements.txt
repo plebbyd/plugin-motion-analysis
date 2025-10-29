@@ -1,6 +1,6 @@
 opencv-python
 matplotlib
-numpy
+numpy>=1.20
 mydia
 scikit-learn
 scikit-image==0.18.3
