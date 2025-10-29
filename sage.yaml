@@ -1,7 +1,7 @@
 name: "motion-analysis-dev"
 description: "Motion Analysis Dev"
 namespace: "sage"
-version: "0.0.2"
+version: "0.0.3"
 authors: "Luke Jacobs <lukedj2@illinois.edu>, Seongha Park <seongha.park@anl.gov>, Piotr Lebiedzinski <piotr.lebiedzinski@northwestern.edu>"
 funding: "NSF 1935984"
 collaborators: "Bhupendra Raut, Dario Dematties Reyes, Joseph Swantek, Neal Conrad, Nicola Ferrier, Pete Beckman, Raj Sankaran, Robert Jackson, Scott Collis, Sean Shahkarami, Seongha Park, Sergey Shemyakin, Wolfgang Gerlach, Yongho kim"
