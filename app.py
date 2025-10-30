@@ -195,7 +195,7 @@ def run(args):
             logtimestamp = time.time()
             plugin.publish(TOPIC_FLOWDETECTOR, 'Flow Detector: End plugin', timestamp=int(logtimestamp * 1e9))
             print(f"End plugin: {logtimestamp}")
-            exit(0)
+            return 0
 
 
 if __name__=='__main__':
